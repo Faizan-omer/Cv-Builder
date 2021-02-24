@@ -21,6 +21,24 @@ const LandingPage = (props) => {
          })
     },[])
 
+    // const deleteRecord = (item) => {
+    //     fetch('http://192.168.10.5:3000/delete', {
+    //         method: "post",
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({
+    //             id: _id
+    //         })
+    //     })
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             props.navigation.navigate("Home")
+    //         })
+    //         .catch(error => {
+    //             console.log(error)
+    //         })}
+
     const List = (item)=> {
         return(
             <Card styles={styles.cardContainer}>
@@ -33,7 +51,13 @@ const LandingPage = (props) => {
                     />
                     <View style={{marginLeft: 17, marginTop: 6}}>
                         <Text style={styles.cardText}>{item.name}</Text>
-                        <Text style={styles.cardSubText}>{item.email}</Text>
+                        <Text style={styles.cardSubText}>{item.title}</Text>
+                    </View>
+                    <View style={{justifyContent:'flex-end', flexDirection:'row', alignItems:'flex-end', flex:1 }}>
+                        <Ionicons
+                         name='trash-sharp'
+                         size={35}
+                         style={{color:"#d60210"}} /> 
                     </View>
                 </View>
         </Card>
@@ -50,14 +74,6 @@ const LandingPage = (props) => {
             }}
             keyExtractor={item=>item._id.toString()}
            />}
-           <TouchableOpacity onPress={()=>props.navigation.navigate('Create Cv')} style={styles.iconAdd}>
-            <Ionicons
-                name='add-circle'
-                size={70}
-                color='#854ca8'
-                
-            />
-           </TouchableOpacity>
         </View>
     )
 }
@@ -84,12 +100,8 @@ const styles = StyleSheet.create({
 
     },
     cardSubText:{
-        fontSize: 17,
+        fontSize: 15,
         
-    },
-    iconAdd:{
-        justifyContent:'flex-end',
-        alignItems:'flex-end',
     }
 });
 

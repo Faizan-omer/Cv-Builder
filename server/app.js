@@ -32,6 +32,7 @@ app.get('/',(req,res)=>{
 
 app.post('/post',(req,res)=>{
     const cv = Cv({
+        title: req.body.title,
         name: req.body.name,
         email: req.body.email,
         phone: req.body.phone,

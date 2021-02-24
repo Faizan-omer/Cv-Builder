@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+//Creates a Mongoose Schema mapping to MongoDB collection
 const CvSchema = new mongoose.Schema(
     {
         title: String,

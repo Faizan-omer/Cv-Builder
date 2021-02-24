@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, ScrollView, StyleSheet, Text, Alert } from 'react-native';
+import React  from 'react';
+import { View, ScrollView, StyleSheet, Text, Alert, SafeAreaView } from 'react-native';
 import { Formik } from 'formik';
 import Constants from 'expo-constants';
 import { TextInput, Card, Title } from 'react-native-paper';
@@ -12,7 +12,8 @@ import * as Print from 'expo-print';
 
 
 
-//yup schema for form validation
+
+//Yup schema for form validation
 const formSchema = yup.object({
     title: yup.string().required(),
     name: yup.string().required(),
@@ -26,31 +27,33 @@ const formSchema = yup.object({
 
 const DetailsForm = (props) => {
 
+   //Takes a html template as input creates pdf from template and saves it to local device storage 
+    const createAndSavePDF = async (html) => {
+        try {
+        const { uri } = await Print.printToFileAsync({ html });
+        if (Platform.OS === "ios") {
+            await Sharing.shareAsync(uri);
+        } else {
+            const permission = await MediaLibrary.requestPermissionsAsync();
+            if (permission.granted) {
+            await MediaLibrary.createAssetAsync(uri);
+            }
+        }
+        } catch (error) {
+        console.error(error);
+        }
+    };
    
- const createAndSavePDF = async (html) => {
-     try {
-       const { uri } = await Print.printToFileAsync({ html });
-       if (Platform.OS === "ios") {
-         await Sharing.shareAsync(uri);
-       } else {
-         const permission = await MediaLibrary.requestPermissionsAsync();
-         if (permission.granted) {
-           await MediaLibrary.createAssetAsync(uri);
-         }
-       }
-     } catch (error) {
-       console.error(error);
-     }
-   };
- 
 
     return (
-        <ScrollView>
+        <SafeAreaView>
+            <ScrollView>
             <View >
+                {/* Formik forms are used to provide added functionalities to forms like setting state and validation */}
             <Formik 
-                initialValues={{ title:"", info:"", education:"", experience:"", projects:"", phone:null, email:"", name:""}}
+                initialValues={{ title:"", info:"", education:"", experience:"", projects:"", phone:"", email:"", name:""}}
                 validationSchema={formSchema}
-                onSubmit={(values) => {
+                onSubmit={(values,actions) => {
                     fetch('http://192.168.10.5:3000/post',{
                         method: 'POST',
                         headers: {
@@ -66,7 +69,10 @@ const DetailsForm = (props) => {
                               experience: values.experience,
                               projects: values.projects
                           })
-                    }).then(res=>res.json()).then(
+                    }) //Change IP address to machine running server
+
+                    //The html content contains the template string to be converted to pdf
+                    .then(res=>res.json()).then(
                         data=>
                         {    const htmlContent = `
                         <!DOCTYPE html>
@@ -129,12 +135,12 @@ const DetailsForm = (props) => {
                                                     <td class="td1">
                                                         
                                                         <section itemscope itemtype="http://schema.org/Person">
-                                                        <h1 class="name" itemprop="name">${values.name.toUpperCase().split(" ")[0]}<br> ${values.name.toUpperCase().split(" ")[1]}</h1>
+                                                        <h1 class="name" itemprop="name">${values.name.toUpperCase()}</h1>
+                                                        <hr>
                                                         <img src="images/me.jpg" alt="" class="profilepic" itemprop="image">
                                                         <h3>Contact</h3>
                                                         <hr>
-                                                        <h4>Address:</h4>
-                                                        <section itemprop="location" itemscope itemtype="http://schema.org/Place"><p itemprop="address">43,Gulistan-e-Johar,Karachi</p></section>
+
                                                     
                                                             <h5 itemprop="email">Email:</h5><p>${values.email}</p>
                                                             <h5 itemprop="telephone">Phone:</h5><p>${values.phone}</p>
@@ -149,19 +155,19 @@ const DetailsForm = (props) => {
                                                         </p>
                                                         <h3>Experience</h3>
                                                         <hr>
-                                                        <h5><span itemscope itemtype="http://schema.org/Person">${values.experience}</h5>
+                                                        <p><span itemscope itemtype="http://schema.org/Person">${values.experience}</p>
                                                         <h3>Projects</h3>
                                                         <hr>
                                                         <ul>
-                                                            <li>Footslog an android native mobile app that guides tourists and hikers while logging their journey experience</li>
-                                                            <li>Warped City a Unity engine based Mobile game, a 2D platformer with physics and sensor controls </li>
-                                                            <li>A library Management system based on PHP and MYSQL for librarians and borrowers</li>
-                                                            <li>A website for a car garage business "CarbonHood" developed in ASP.NET utilizing Restful APIs</li>
-                                                            <li>A cross platform mobile Grocery Application where vendors and sellers form a marketplace</li>
+                                                            <li>${values.projects.split("\n"[0])}</li>
+                                                            <li>${values.projects.split("\n")[1] == undefined ? " " : values.projects.split("\n")[1] } </li>
+                                                            <li>${values.projects.split("\n")[2] == undefined ? " " : values.projects.split("\n")[2] }</li>
+                                                            <li>${values.projects.split("\n")[3] == undefined ? " " : values.projects.split("\n")[3] }</li>
+                                                            <li>${values.projects.split("\n")[4] == undefined ? " " : values.projects.split("\n")[4] }</li>
                                                         </ul>
                                                         <h3>Education</h3>
                                                         <hr>
-                                                        <section itemscope itemtype="http://schema.org/EducationalOrganization"><h5>${values.education}</h5></section>
+                                                        <section itemscope itemtype="http://schema.org/EducationalOrganization"><p>${values.education}</p></section>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -172,8 +178,9 @@ const DetailsForm = (props) => {
                         </html>
                      `;
                             createAndSavePDF(htmlContent)
+                            actions.resetForm() //Resets form input fields  
                             props.navigation.navigate("Home")
-                            Alert.alert('Cv Generated')
+                            Alert.alert('Cv Generated and Stored')
                          
                         }).catch(error=>console.log(error))
                 }}
@@ -191,8 +198,9 @@ const DetailsForm = (props) => {
                                         theme = {inputTheme}
                                         value={formikprops.values.title}
                                         onChangeText={formikprops.handleChange("title")}
+                                        onBlur={formikprops.handleBlur('title')}
                                         />
-                                    <Text style={{fontSize:10}}>{formikprops.touched.title && formikprops.errors.title}</Text>
+                                    <Text style={styles.errorText}>{formikprops.touched.title && formikprops.errors.title}</Text>
 
                                    <Text style={{fontSize:15}}>Name</Text>
                                    <TextInput
@@ -200,8 +208,10 @@ const DetailsForm = (props) => {
                                         theme = {inputTheme}
                                         value={formikprops.values.name}
                                         onChangeText={formikprops.handleChange("name")}
+                                        onBlur={formikprops.handleBlur('name')}
+                                        
                                         />
-                                    <Text style={{fontSize:10}}>{formikprops.touched.name && formikprops.errors.name}</Text>
+                                    <Text style={styles.errorText}>{formikprops.touched.name && formikprops.errors.name}</Text>
 
                                     <Text style={{fontSize:15}}>E-mail</Text>
                                     <TextInput
@@ -209,8 +219,9 @@ const DetailsForm = (props) => {
                                         theme = {inputTheme}
                                         value={formikprops.values.email}
                                         onChangeText={formikprops.handleChange("email")}
+                                        onBlur={formikprops.handleBlur('email')}
                                     />
-                                    <Text style={{fontSize:10}}>{formikprops.touched.email && formikprops.errors.email}</Text>
+                                    <Text style={styles.errorText}>{formikprops.touched.email && formikprops.errors.email}</Text>
 
                                     <Text style={{fontSize:15}}>Phone #</Text>
                                     <TextInput
@@ -218,9 +229,10 @@ const DetailsForm = (props) => {
                                         theme = {inputTheme}
                                         value={formikprops.values.phone}
                                         onChangeText={formikprops.handleChange("phone")}
+                                        onBlur={formikprops.handleBlur('phone')}
                                         keyboardType='numeric'
                                     />
-                                    <Text style={{fontSize:10}}>{formikprops.touched.phone && formikprops.errors.phone}</Text>
+                                    <Text style={styles.errorText}>{formikprops.touched.phone && formikprops.errors.phone}</Text>
 
                                     <Text style={{fontSize:15}}>Personal Information</Text>
                                     <TextInput
@@ -230,8 +242,9 @@ const DetailsForm = (props) => {
                                         numberOfLines={6}
                                         value={formikprops.values.info}
                                         onChangeText={formikprops.handleChange("info")}
+                                        onBlur={formikprops.handleBlur('info')}
                                     />
-                                    <Text style={{fontSize:10}}>{formikprops.touched.info && formikprops.errors.info}</Text>
+                                    <Text style={styles.errorText}>{formikprops.touched.info && formikprops.errors.info}</Text>
                                </Card.Content>
                            </Card>
                            <Card style={styles.cardStyle}>
@@ -246,8 +259,9 @@ const DetailsForm = (props) => {
                                         numberOfLines={4}
                                         value={formikprops.values.education}
                                         onChangeText={formikprops.handleChange("education")}
+                                        onBlur={formikprops.handleBlur('education')}
                                         />
-                                    <Text style={{fontSize:10}}>{formikprops.touched.education && formikprops.errors.education}</Text>
+                                    <Text style={styles.errorText}>{formikprops.touched.education && formikprops.errors.education}</Text>
 
                                     <Text style={{fontSize:15}}>Experience</Text>
                                     <TextInput
@@ -257,19 +271,21 @@ const DetailsForm = (props) => {
                                         numberOfLines={6}
                                         value={formikprops.values.experience}
                                         onChangeText={formikprops.handleChange("experience")}
+                                        onBlur={formikprops.handleBlur('experience')}
                                     />
-                                    <Text style={{fontSize:10}}>{formikprops.touched.experience && formikprops.errors.experience}</Text>
+                                    <Text style={styles.errorText}>{formikprops.touched.experience && formikprops.errors.experience}</Text>
 
-                                    <Text style={{fontSize:15}}>Projects</Text>
+                                    <Text style={{fontSize:15}}>Projects (max: 5)</Text>
                                     <TextInput
                                         style={styles.inputStyle}
                                         theme = {inputTheme}
                                         multiline= {true}
-                                        numberOfLines={4}
+                                        numberOfLines={5}
                                         value={formikprops.values.projects}
                                         onChangeText={formikprops.handleChange("projects")}
+                                        onBlur={formikprops.handleBlur('projects')}
                                     />
-                                    <Text style={{fontSize:10}}>{formikprops.touched.projects && formikprops.errors.projects}</Text>
+                                    <Text style={styles.errorText}>{formikprops.touched.projects && formikprops.errors.projects}</Text>
                                </Card.Content>
                            </Card>
                            <View style={{alignItems:"center"}}>
@@ -284,7 +300,7 @@ const DetailsForm = (props) => {
                                 />
                             }
                             iconRight
-                            buttonStyle={{height:50, marginBottom:2, borderRadius:50, width:200, backgroundColor:'#d02860', padding:11}}
+                            buttonStyle={{height:50, marginBottom:15, borderRadius:50, width:200, backgroundColor:'#d02860', padding:11}}
                            />
                            </View>
                        </View>
@@ -292,7 +308,8 @@ const DetailsForm = (props) => {
                 }
             </Formik>
             </View>
-        </ScrollView>
+            </ScrollView>
+        </SafeAreaView>
     )
 }
 
@@ -315,6 +332,13 @@ const styles = StyleSheet.create({
     inputStyle:{
         marginBottom:5,
     },
+    errorText:{
+        color:'crimson',
+        fontSize:10,
+        fontWeight:'bold',
+        marginBottom:10,
+        marginTop:6,
+    }
    
 });
 

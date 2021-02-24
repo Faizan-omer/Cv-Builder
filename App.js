@@ -1,20 +1,18 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { FontAwesome5, Ionicons, SimpleLineIcons } from '@expo/vector-icons';
 
 import DetailsForm from './components/DetailsForm';
 import LandingPage from './components/LandingPage';
-
-
-
+import CvDetails from './components/CvDetails';
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator();
 
+//Nested inside Tab Navigator
 function HomeStack()
 {
   return(
@@ -25,17 +23,41 @@ function HomeStack()
         headerStyle: {
           backgroundColor: '#009387',
         },
+        headerRight: () => (
+          <SimpleLineIcons
+            size={25}
+            style={{marginRight:12, marginTop:2}}
+            onPress={() => Alert.alert('Generated PDFs are stored in: Internal storage/DCIM on Android ')}
+            name="info"
+            color="#fff"
+          />
+        ),
         headerTintColor: '#fff',
         headerTitleStyle: {
           fontWeight: 'bold',
-          alignSelf: 'center'
+          alignSelf: 'center',
+          
         },
       }}
        />
+       <Stack.Screen name='Details' component={CvDetails}
+        options={{
+          title: 'Details',
+          headerStyle: {
+            backgroundColor: '#009387',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            
+          },
+        }}
+        />
      </Stack.Navigator>
   )
 }
 
+//Nested inside Tab Navigator
 function DetailStack()
 {
   return(
@@ -73,8 +95,7 @@ function App() {
             <FontAwesome5 name="home" color={color} size={20} />
           ),
         }}
-        
-        ></Tab.Screen>
+        />
         <Tab.Screen name= 'Create Cv'
          component={DetailStack}
          options={{
@@ -84,7 +105,7 @@ function App() {
             <Ionicons name="create" color={color} size={25} />
           ),
         }}
-        ></Tab.Screen>
+        />
       </Tab.Navigator>
     
   );
@@ -92,11 +113,11 @@ function App() {
 
 export default ()=>{
   return(
-   
+    
       <NavigationContainer>
-      <App />
-    </NavigationContainer>
-   
+        <App />
+      </NavigationContainer>
+
   )
 }
 

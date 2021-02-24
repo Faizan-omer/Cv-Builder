@@ -6,11 +6,13 @@ require('./cvData');
 
 app.use(bodyParser.json())
 
-
+//URI for connecting to MongoDb Atlas Cloud
 const mongoURI = 'mongodb+srv://faizancv:WOFE1bFpUahpj6b9@cluster0.4egi3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
 
+//Initializing Mongoose Schema to Cv
 const Cv = mongoose.model('cv');
 
+//Connect to database
 mongoose.connect(mongoURI,{
         useNewUrlParser:true,
         useUnifiedTopology:true
@@ -24,12 +26,14 @@ mongoose.connection.on('error', ()=>{
     console.log('error connecting to mongodb');
 })
 
+//Default Route
 app.get('/',(req,res)=>{
     Cv.find({}).then(data=>{
         res.send(data)
     }).catch(error=>console.log(error))
 })
 
+//Post route to add data in database
 app.post('/post',(req,res)=>{
     const cv = Cv({
         title: req.body.title,
@@ -49,13 +53,15 @@ app.post('/post',(req,res)=>{
     
 })
 
+//Delete route to delete data from database
 app.post('/delete',(req,res)=>{
     Cv.findByIdAndRemove(req.body.id)
     .then(data=>{console.log(data)
-        res.send('deleted')
+        res.send(data)
        }).catch(error=>console.log(error))
 })
 
+//Server listening on port 3000
 app.listen(3000, ()=>{
     console.log('server running');
 })

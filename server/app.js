@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 require('./cvData');
 
+const port = 3000; //Port number where server listens on
+
 app.use(bodyParser.json())
 
 //URI for connecting to MongoDb Atlas Cloud
@@ -62,7 +64,7 @@ app.post('/delete',(req,res)=>{
 })
 
 //Server listening on port 3000
-app.listen(3000, ()=>{
+app.listen(port, ()=>{
     console.log('server running');
 })
 

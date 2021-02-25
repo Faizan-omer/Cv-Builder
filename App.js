@@ -32,11 +32,11 @@ function HomeStack()
             color="#fff"
           />
         ),
+        headerTitleAlign:'center',
         headerTintColor: '#fff',
         headerTitleStyle: {
-          fontWeight: 'bold',
-          alignSelf: 'center',
-          
+          fontWeight: 'bold'
+    
         },
       }}
        />

@@ -197,6 +197,7 @@ const DetailsForm = (props) => {
                                         style={styles.inputStyle}   
                                         theme = {inputTheme}
                                         value={formikprops.values.title}
+                                        testID='titleId'
                                         onChangeText={formikprops.handleChange("title")}
                                         onBlur={formikprops.handleBlur('title')}
                                         />
@@ -207,6 +208,7 @@ const DetailsForm = (props) => {
                                         style={styles.inputStyle}   
                                         theme = {inputTheme}
                                         value={formikprops.values.name}
+                                        testID='nameId'
                                         onChangeText={formikprops.handleChange("name")}
                                         onBlur={formikprops.handleBlur('name')}
                                         
@@ -218,6 +220,7 @@ const DetailsForm = (props) => {
                                         style={styles.inputStyle}
                                         theme = {inputTheme}
                                         value={formikprops.values.email}
+                                        testID='emailId'
                                         onChangeText={formikprops.handleChange("email")}
                                         onBlur={formikprops.handleBlur('email')}
                                     />
@@ -228,6 +231,7 @@ const DetailsForm = (props) => {
                                         style={styles.inputStyle}
                                         theme = {inputTheme}
                                         value={formikprops.values.phone}
+                                        testID='phoneId'
                                         onChangeText={formikprops.handleChange("phone")}
                                         onBlur={formikprops.handleBlur('phone')}
                                         keyboardType='numeric'
@@ -241,6 +245,7 @@ const DetailsForm = (props) => {
                                         multiline= {true}
                                         numberOfLines={6}
                                         value={formikprops.values.info}
+                                        testID='infoId'
                                         onChangeText={formikprops.handleChange("info")}
                                         onBlur={formikprops.handleBlur('info')}
                                     />
@@ -258,6 +263,7 @@ const DetailsForm = (props) => {
                                         multiline= {true}
                                         numberOfLines={4}
                                         value={formikprops.values.education}
+                                        testID='educationId'
                                         onChangeText={formikprops.handleChange("education")}
                                         onBlur={formikprops.handleBlur('education')}
                                         />
@@ -270,6 +276,7 @@ const DetailsForm = (props) => {
                                         multiline= {true}
                                         numberOfLines={6}
                                         value={formikprops.values.experience}
+                                        testID='experienceId'
                                         onChangeText={formikprops.handleChange("experience")}
                                         onBlur={formikprops.handleBlur('experience')}
                                     />
@@ -282,6 +289,7 @@ const DetailsForm = (props) => {
                                         multiline= {true}
                                         numberOfLines={5}
                                         value={formikprops.values.projects}
+                                        testID='projectsId'
                                         onChangeText={formikprops.handleChange("projects")}
                                         onBlur={formikprops.handleBlur('projects')}
                                     />
@@ -292,6 +300,7 @@ const DetailsForm = (props) => {
                            <Button
                             onPress={formikprops.handleSubmit}
                             title='Generate CV  '
+                            testID='buttonId'
                             icon={
                                 <Feather
                                 name='check'
